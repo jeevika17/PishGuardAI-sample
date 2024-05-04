@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Detection</title>
+</head>
+<body>
+    <h1>Phishing Detection</h1>
+    <form id="phishing-form">
+        <input type="text" id="url-input" placeholder="Enter URL...">
+        <input type="submit" value="Analyze">
+    </form>
+    <div id="result-container"></div>
+
+    <script>
+        document.getElementById('phishing-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var url = document.getElementById('url-input').value;
+
+            // Make an AJAX request to the Flask backend
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'http://localhost:5000/analyze-url', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function() {
+                if (xhr.status == 200) {
+                    var result = JSON.parse(xhr.responseText);
+                    document.getElementById('result-container').innerHTML = '<p>URL: ' + result.url + '</p>' +
+                                                                             '<p>Result: ' + result.result + '</p>';
+                }
+            };
+            xhr.send(JSON.stringify({url: url}));
+        });
+    </script>
+</body>
+</html>

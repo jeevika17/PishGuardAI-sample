@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cybersecurity Checkpoint</title>
+  <style>
+    body {
+      font-family: monospace, sans-serif;
+      background-color: #000;
+      color: #33ff33;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 100px auto;
+      padding: 20px;
+      background-color: #1a1a1a;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    }
+    h1, h2 {
+      text-align: center;
+      color: #0ff;
+    }
+    form {
+      margin-top: 20px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #ffffff;
+      color: #lime;
+      border: 1px solid #0f0;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      background-color: #4caf50; /* green for code-ish feel */
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .result {
+      margin-top: 20px;
+      border-top: 1px solid #0f0;
+      padding-top: 20px;
+      color: #33ff33;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PhishGuard AI</h1>
+    <form id="phishing-form">
+      <input type="text" id="url-input" placeholder="Enter URL for Inspection...">
+      <input type="submit" value="Initiate Scan">
+    </form>
+    <div class="result" id="result-container"></div>
+  </div>
+
+  <script>
+    // Define the getResultMessage function
+    function getResultMessage(probability) {
+      if (probability >= 10) {
+        return '**WARNING:** URL flagged as potential Phishing Threat!';
+      } else {
+        return 'URL appears Secure. Proceed with Caution.';
+      }
+    }
+  
+    // Attach the event listener and handle the response
+    document.getElementById('phishing-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      var url = document.getElementById('url-input').value;
+  
+      // Make an AJAX request to the Flask backend (assuming it exists)
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://localhost:5000/analyze-url', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.onload = function() {
+        if (xhr.status == 200) {
+          var result = JSON.parse(xhr.responseText);
+          // Update the frontend with the actual result
+          document.getElementById('result-container').innerHTML = '<p>URL: ' + result.url + '</p>' +
+                                                                  '<p>Scan Result: ' + result.result + '</p>' +
+                                                                  '<p>' + getResultMessage(result.result) + '</p>';
+        }
+      };
+      xhr.send(JSON.stringify({url: url}));
+    });
+  </script>
+</body>
+</html>
